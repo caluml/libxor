@@ -1,5 +1,7 @@
 package xor.lib;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -9,10 +11,28 @@ public class XoringInputStream extends InputStream {
 	private final InputStream xorData;
 	private int xorRead;
 
+	/**
+	 * Constructs an {@link XoringInputStream}
+	 * 
+	 * @param inputStream
+	 *            the {@link InputStream} to wrap
+	 * @param xorData
+	 *            the data to XOR against
+	 * @param offset
+	 *            the offset into the XOR data to start with
+	 * @throws IOException
+	 *             if the stream does not support seek, or if some other I/O error occurs
+	 */
 	public XoringInputStream(InputStream inputStream, InputStream xorData, int offset) throws IOException {
 		this.inputStream = inputStream;
 		this.xorData = xorData;
 		xorData.skip(offset);
+	}
+
+	public XoringInputStream(InputStream inputStream, File xorData, int offset) throws IOException {
+		this.inputStream = inputStream;
+		this.xorData = new FileInputStream(xorData);
+		this.xorData.skip(offset);
 	}
 
 	@Override
