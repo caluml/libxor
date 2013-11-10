@@ -101,7 +101,7 @@ public class XoringInputStream extends InputStream {
 
 	@Override
 	public void close() throws IOException {
-		throw new RuntimeException("Not implemented");
+		inputStream.close();
 	}
 
 	@Override
