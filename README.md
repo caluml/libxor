@@ -1,0 +1,4 @@
+libxor
+======
+
+XOR library
