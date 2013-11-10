@@ -3,11 +3,13 @@ package xor.lib;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 public class XoringInputStreamTest {
@@ -81,22 +83,22 @@ public class XoringInputStreamTest {
 	public void OutputStream_xors_data_and_InputStream_reverses_it() throws Exception {
 		byte[] original = "test".getBytes("UTF-8");
 		byte[] xorData = getXorData(original.length);
+		ByteArrayInputStream xorIs1 = new ByteArrayInputStream(xorData);
+		ByteArrayInputStream xorIs2 = new ByteArrayInputStream(xorData);
+
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		@SuppressWarnings("resource")
-		XoringOutputStream xoringOutputStream = new XoringOutputStream(byteArrayOutputStream, new ByteArrayInputStream(
-				xorData), 0);
+		XoringOutputStream xoringOutputStream = new XoringOutputStream(byteArrayOutputStream, xorIs1, 0);
 
-		xoringOutputStream.write(original);
+		IOUtils.write(original, xoringOutputStream);
 
 		byte[] byteArray = byteArrayOutputStream.toByteArray();
 		assertNotEquals("Ciphertext should be different from original", new String(original), new String(byteArray));
 
 		@SuppressWarnings("resource")
-		XoringInputStream xoringInputStream = new XoringInputStream(new ByteArrayInputStream(byteArray),
-				new ByteArrayInputStream(xorData), 0);
+		XoringInputStream xoringInputStream = new XoringInputStream(new ByteArrayInputStream(byteArray), xorIs2, 0);
 
-		byte[] result = copyArray(byteArray);
-		xoringInputStream.read(result);
+		byte[] result = IOUtils.toByteArray(xoringInputStream);
 
 		assertArrayEquals(original, result);
 	}
@@ -116,6 +118,41 @@ public class XoringInputStreamTest {
 
 		int read = xoringInputStream.read();
 		assertEquals(-1, read);
+	}
+
+	@Test
+	public void XoringInputStream_behaves_like_a_stream() throws Exception {
+		byte[] original = "AA".getBytes("UTF-8");
+		byte[] xorData = "A ".getBytes("UTF-8");
+
+		@SuppressWarnings("resource")
+		XoringInputStream xoringInputStream = new XoringInputStream(new ByteArrayInputStream(original),
+				new ByteArrayInputStream(xorData), 0);
+
+		assertTrue(xoringInputStream.available() > 0);
+		assertEquals(0, xoringInputStream.read());
+		assertTrue(xoringInputStream.available() > 0);
+		assertEquals(97, xoringInputStream.read());
+		assertTrue(xoringInputStream.available() == 0);
+		assertEquals(-1, xoringInputStream.read());
+	}
+
+	@Test(timeout = 200)
+	public void IOUtils_can_copy_from_XoringInputStream() throws Exception {
+		byte[] original = "test".getBytes("UTF-8");
+		byte[] xorData = getXorData(original.length * 2);
+
+		@SuppressWarnings("resource")
+		XoringInputStream xoringInputStream = new XoringInputStream(
+				new ByteArrayInputStream(original),
+				new ByteArrayInputStream(xorData), 0);
+
+		ByteArrayOutputStream output = new ByteArrayOutputStream(4);
+		IOUtils.copy(xoringInputStream, output);
+
+		byte[] outputBytes = output.toByteArray();
+		assertTrue("Should be some data", outputBytes.length > 0);
+		assertEquals(original.length, outputBytes.length);
 	}
 
 	private byte[] copyArray(byte[] bytes) {

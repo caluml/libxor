@@ -38,24 +38,26 @@ public class XoringOutputStream extends OutputStream {
 
 	@Override
 	public void write(int b) throws IOException {
-		final int xor = xorData.read();
-		if (xor == -1) {
-			throw new InsufficientXorDataRuntimeException("Ran out of XOR data after reading " + xorRead + " bytes");
-		}
-		xorRead++;
-		outputStream.write((byte) (b ^ xor));
+		outputStream.write((byte) (b ^ readXor()));
 	}
 
 	@Override
-	public void write(byte[] bytes) throws IOException {
-		for (byte x : bytes) {
-			write(x);
-		}
+	public void write(byte[] b) throws IOException {
+		write(b, 0, b.length);
 	}
 
 	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
-		throw new RuntimeException("Not implemented");
+		if (b == null) {
+			throw new NullPointerException();
+		} else if (off < 0 || off > b.length || len < 0 || off + len > b.length || off + len < 0) {
+			throw new IndexOutOfBoundsException();
+		} else if (len == 0) {
+			return;
+		}
+		for (int i = 0; i < len; i++) {
+			write(b[off + i]);
+		}
 	}
 
 	@Override
@@ -66,6 +68,15 @@ public class XoringOutputStream extends OutputStream {
 	@Override
 	public void close() throws IOException {
 		throw new RuntimeException("Not implemented");
+	}
+
+	private int readXor() throws IOException {
+		int x = xorData.read();
+		xorRead++;
+		if (x == -1) {
+			throw new InsufficientXorDataRuntimeException("Ran out of XOR data after reading " + xorRead + " bytes");
+		}
+		return x;
 	}
 
 }

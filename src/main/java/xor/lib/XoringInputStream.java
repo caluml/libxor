@@ -36,32 +36,57 @@ public class XoringInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] bytes) throws IOException {
-		int count = 0;
-		for (int i = 0; i < bytes.length; i++) {
-			bytes[i] = (byte) read();
-			count++;
-		}
-		return count;
+	public int read(byte[] b) throws IOException {
+		return read(b, 0, b.length);
 	}
 
 	@Override
 	public int read() throws IOException {
-		int i = inputStream.read();
-		if (i == -1) {
+		int read = inputStream.read();
+		if (read == -1) {
 			return -1;
 		}
-		int x = xorData.read();
-		if (x == -1) {
-			throw new InsufficientXorDataRuntimeException("Ran out of XOR data after reading " + xorRead + " bytes");
-		}
-		xorRead++;
-		return x ^ i;
+		return read ^ readXor();
 	}
 
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
-		throw new RuntimeException("Not implemented");
+		if (b == null) {
+			throw new NullPointerException();
+		} else if (off < 0 || len < 0 || len > b.length - off) {
+			throw new IndexOutOfBoundsException();
+		} else if (len == 0) {
+			return 0;
+		}
+
+		int c = read();
+		if (c == -1) {
+			return -1;
+		}
+		b[off] = (byte) c;
+
+		int i = 1;
+		try {
+			for (; i < len; i++) {
+				c = read();
+				if (c == -1) {
+					break;
+				}
+
+				b[off + i] = (byte) c;
+			}
+		} catch (IOException ee) {
+		}
+		return i;
+	}
+
+	private int readXor() throws IOException {
+		int x = xorData.read();
+		xorRead++;
+		if (x == -1) {
+			throw new InsufficientXorDataRuntimeException("Ran out of XOR data after reading " + xorRead + " bytes");
+		}
+		return x;
 	}
 
 	@Override
@@ -71,7 +96,7 @@ public class XoringInputStream extends InputStream {
 
 	@Override
 	public int available() throws IOException {
-		throw new RuntimeException("Not implemented");
+		return inputStream.available();
 	}
 
 	@Override
