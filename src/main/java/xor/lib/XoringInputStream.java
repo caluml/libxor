@@ -48,6 +48,9 @@ public class XoringInputStream extends InputStream {
 	@Override
 	public int read() throws IOException {
 		int i = inputStream.read();
+		if (i == -1) {
+			return -1;
+		}
 		int x = xorData.read();
 		if (x == -1) {
 			throw new InsufficientXorDataRuntimeException("Ran out of XOR data after reading " + xorRead + " bytes");

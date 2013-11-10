@@ -1,6 +1,7 @@
 package xor.lib;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import java.io.ByteArrayInputStream;
@@ -100,11 +101,28 @@ public class XoringInputStreamTest {
 		assertArrayEquals(original, result);
 	}
 
+	@Test
+	public void InputStream_returns_minusone_when_the_source_InputStream_is_empty() throws Exception {
+		byte[] original = "test".getBytes("UTF-8");
+		byte[] xorData = getXorData(original.length * 2);
+
+		@SuppressWarnings("resource")
+		XoringInputStream xoringInputStream = new XoringInputStream(new ByteArrayInputStream(original),
+				new ByteArrayInputStream(xorData), 0);
+
+		for (byte element : original) {
+			xoringInputStream.read();
+		}
+
+		int read = xoringInputStream.read();
+		assertEquals(-1, read);
+	}
+
 	private byte[] copyArray(byte[] bytes) {
-	    byte[] result = new byte[bytes.length];
+		byte[] result = new byte[bytes.length];
 		System.arraycopy(bytes, 0, result, 0, bytes.length);
-	    return result;
-    }
+		return result;
+	}
 
 	private byte[] getXorData(int length) {
 		byte[] xorData = new byte[length];
