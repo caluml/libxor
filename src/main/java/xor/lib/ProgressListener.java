@@ -2,5 +2,5 @@ package xor.lib;
 
 public interface ProgressListener {
 
-	long bytesProcessed();
+	void bytesProcessed(long bytes);
 }

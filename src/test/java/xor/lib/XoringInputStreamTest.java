@@ -112,7 +112,7 @@ public class XoringInputStreamTest {
 		XoringInputStream xoringInputStream = new XoringInputStream(new ByteArrayInputStream(original),
 				new ByteArrayInputStream(xorData), 0);
 
-		for (byte element : original) {
+		for (@SuppressWarnings("unused") byte element : original) {
 			xoringInputStream.read();
 		}
 

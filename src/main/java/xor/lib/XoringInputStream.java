@@ -10,6 +10,8 @@ public class XoringInputStream extends InputStream {
 	private final InputStream inputStream;
 	private final InputStream xorData;
 	private int xorRead;
+	private ProgressListener progressListener;
+	private int bytesRead;
 
 	/**
 	 * Constructs an {@link XoringInputStream}
@@ -46,6 +48,7 @@ public class XoringInputStream extends InputStream {
 		if (read == -1) {
 			return -1;
 		}
+		bytesRead++;
 		return read ^ readXor();
 	}
 
@@ -77,6 +80,8 @@ public class XoringInputStream extends InputStream {
 			}
 		} catch (IOException ee) {
 		}
+		bytesRead = bytesRead + i;
+		notifyProgress();
 		return i;
 	}
 
@@ -119,4 +124,13 @@ public class XoringInputStream extends InputStream {
 		throw new RuntimeException("Not implemented");
 	}
 
+	public void setProgressListener(ProgressListener progressListener) {
+		this.progressListener = progressListener;
+	}
+
+	private void notifyProgress() {
+		if (progressListener != null) {
+			progressListener.bytesProcessed(bytesRead);
+		}
+	}
 }
