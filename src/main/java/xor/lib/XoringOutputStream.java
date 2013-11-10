@@ -67,7 +67,7 @@ public class XoringOutputStream extends OutputStream {
 
 	@Override
 	public void close() throws IOException {
-		throw new RuntimeException("Not implemented");
+		outputStream.close();
 	}
 
 	private int readXor() throws IOException {

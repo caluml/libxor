@@ -38,11 +38,6 @@ public class XoringInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] b) throws IOException {
-		return read(b, 0, b.length);
-	}
-
-	@Override
 	public int read() throws IOException {
 		int read = inputStream.read();
 		if (read == -1) {
@@ -50,6 +45,11 @@ public class XoringInputStream extends InputStream {
 		}
 		bytesRead++;
 		return read ^ readXor();
+	}
+
+	@Override
+	public int read(byte[] b) throws IOException {
+		return read(b, 0, b.length);
 	}
 
 	@Override
@@ -80,7 +80,6 @@ public class XoringInputStream extends InputStream {
 			}
 		} catch (IOException ee) {
 		}
-		bytesRead = bytesRead + i;
 		notifyProgress();
 		return i;
 	}
