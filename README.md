@@ -16,12 +16,12 @@ Usage
 =====
 
 <code>
-FileInputStream source = new FileInputStream("/etc/passwd");
-InputStream xorData = new FileInputStream("/your/pad/file");
-
-XoringInputStream xoringInputStream = new XoringInputStream(source, xorData, 0);
-
-FileUtils.copyInputStreamToFile(xoringInputStream, new File("/tmp/output"));
-
+FileInputStream source = new FileInputStream("/etc/passwd");<br>
+InputStream xorData = new FileInputStream("/your/pad/file");<br>
+<br>
+XoringInputStream xoringInputStream = new XoringInputStream(source, xorData, 0);<br>
+<br>
+FileUtils.copyInputStreamToFile(xoringInputStream, new File("/tmp/output"));<br>
+<br>
 // Remember to delete /your/pad/file now.
 </code>
