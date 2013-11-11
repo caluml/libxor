@@ -140,7 +140,7 @@ public class XoringInputStreamTest {
 	@Test(timeout = 200)
 	public void IOUtils_can_copy_from_XoringInputStream() throws Exception {
 		byte[] original = "test".getBytes("UTF-8");
-		byte[] xorData = getXorData(original.length * 2);
+		byte[] xorData = getXorData(original.length);
 
 		@SuppressWarnings("resource")
 		XoringInputStream xoringInputStream = new XoringInputStream(

@@ -3,6 +3,11 @@ package xor.lib;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Implementation of {@link InputStream} which just keeps supplying a loop of the sample data.
+ * 
+ * Used for testing.
+ */
 public class TestingInputStream extends InputStream {
 
 	private final byte[] bytes;
