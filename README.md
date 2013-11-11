@@ -15,13 +15,13 @@ Remember, if you use a one time pad, they are only secure if you never reuse a p
 Usage
 =====
 
-<code>
-FileInputStream source = new FileInputStream("/etc/passwd");<br>
-InputStream xorData = new FileInputStream("/your/pad/file");<br>
-<br>
-XoringInputStream xoringInputStream = new XoringInputStream(source, xorData, 0);<br>
-<br>
-FileUtils.copyInputStreamToFile(xoringInputStream, new File("/tmp/output"));<br>
-<br>
+<pre>
+FileInputStream source = new FileInputStream("/etc/passwd");
+InputStream xorData = new FileInputStream("/your/pad/file");
+
+XoringInputStream xoringInputStream = new XoringInputStream(source, xorData, 0);
+
+FileUtils.copyInputStreamToFile(xoringInputStream, new File("/tmp/output"));
+
 // Remember to delete /your/pad/file now.
-</code>
+</pre>
