@@ -25,3 +25,11 @@ FileUtils.copyInputStreamToFile(xoringInputStream, new File("/tmp/output"));
 
 // Remember to delete /your/pad/file now.
 </pre>
+
+Example CLI tools for sending files over a network
+<pre>
+receiver: java -cp target/classes/ xor.cli.Receiver /my/random-pad 0 /tmp/received 5000
+sender: java -cp target/classes/ xor.cli.Sender /my/random-pad 0 /file/to/send 127.0.0.1 5000
+receiver: shred -uvz /my/random-pad
+sender: shred -uvz /my/random-pad
+</pre>
