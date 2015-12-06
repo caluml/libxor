@@ -28,8 +28,12 @@ FileUtils.copyInputStreamToFile(xoringInputStream, new File("/tmp/output"));
 
 Example CLI tools for sending files over a network
 <pre>
-receiver: java -cp target/classes/ xor.cli.Receiver /my/random-pad 0 /tmp/received 5000
-sender: java -cp target/classes/ xor.cli.Sender /my/random-pad 0 /file/to/send 127.0.0.1 5000
-receiver: shred -uvz /my/random-pad
-sender: shred -uvz /my/random-pad
+mvn clean package
+pad generator: java -cp target/classes/ xor.cli.PadGenerator /tmp/pad 1024000
+simple xorer : java -cp target/classes/ xor.cli.Xorer false /tmp/pad /etc/passwd /tmp/xorpasswd
+
+receiver     : java -cp target/classes/ xor.cli.Receiver /my/random-pad 0 /tmp/received 5000
+sender       : java -cp target/classes/ xor.cli.Sender /my/random-pad 0 /file/to/send 127.0.0.1 5000
+receiver     : shred -uvz /my/random-pad
+sender       : shred -uvz /my/random-pad
 </pre>
