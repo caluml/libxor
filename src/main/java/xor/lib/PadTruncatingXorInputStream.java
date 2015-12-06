@@ -68,11 +68,9 @@ public class PadTruncatingXorInputStream extends InputStream {
 		}
 		pos--;
 		file.seek(pos);
-		final int x = file.read();
-		for (int i = 0; i < 10; i++) {
-			file.write(random.nextInt());
-		}
-		file.setLength(pos);
+        final int x = file.read();
+        file.write(random.nextInt());
+        file.setLength(pos);
 
 		xorRead++;
 		return x;
