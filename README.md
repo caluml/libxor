@@ -12,6 +12,10 @@ If you run out of pad data, an InsufficientXorDataRuntimeException is thrown.
 This can be used to implement a <a href="https://en.wikipedia.org/wiki/One-time_pad">One-time Pad</a>.
 Remember, if you use a one time pad, they are only secure if you never reuse a pad, if the pad data is perfectly random, and if the pad is securely destroyed after the pad is used.
 
+To encourage the non-reuse of One Time Pads, there are the PadTruncatingXorInputStream and PadTruncatingXorInputStream.
+Using these classes will cause the pad file to be overwritten with random data, and truncated as it is used. This is a lot slower, but means the pad can't be reused.
+If your filesystem uses caching, journalling, or wear-levelling though, the original pad <a href="https://en.wikipedia.org/wiki/Data_erasure#Limitations">may still be recoverable</a>.
+
 Usage
 =====
 
