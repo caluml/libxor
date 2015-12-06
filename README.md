@@ -34,7 +34,8 @@ Example CLI tools for sending files over a network
 <pre>
 mvn clean package
 pad generator: java -cp target/classes/ xor.cli.PadGenerator /tmp/pad 1024000
-simple xorer : java -cp target/classes/ xor.cli.Xorer false /tmp/pad /etc/passwd /tmp/xorpasswd
+simple xorer : java -cp target/classes/ xor.cli.Xorer /tmp/pad false /etc/passwd /tmp/xorpasswd
+and back.... : java -cp target/classes/ xor.cli.Xorer /tmp/pad false /tmp/xorpasswd /tmp/originalpasswd
 
 receiver     : java -cp target/classes/ xor.cli.Receiver /my/random-pad 0 /tmp/received 5000
 sender       : java -cp target/classes/ xor.cli.Sender /my/random-pad 0 /file/to/send 127.0.0.1 5000
