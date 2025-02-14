@@ -5,27 +5,27 @@ import static org.junit.Assert.assertArrayEquals;
 import java.io.ByteArrayInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import org.junit.Test;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class NetworkingTest {
 
 	private final Random random = new Random();
 
 	@Test
 	public void Xor_works_over_network_socket() throws Exception {
-		byte[] original = "Test 客服中心 Фото".getBytes("UTF-8");
+		byte[] original = "Test 客服中心 Фото".getBytes(StandardCharsets.UTF_8);
 		byte[] xorData = getXorData(original.length);
 		ServerSocket serverSocket = new ServerSocket(0);
 		Socket socket = new Socket(serverSocket.getInetAddress(), serverSocket.getLocalPort());
 		Socket listening = serverSocket.accept();
 
-		@SuppressWarnings("resource")
 		XoringOutputStream xoringOutputStream = new XoringOutputStream(socket.getOutputStream(),
 				new ByteArrayInputStream(xorData), 0);
 
-		@SuppressWarnings("resource")
 		XoringInputStream xoringInputStream = new XoringInputStream(listening.getInputStream(),
 				new ByteArrayInputStream(xorData), 0);
 

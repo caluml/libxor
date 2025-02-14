@@ -5,33 +5,36 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class XoringInputStream extends InputStream {
 
 	private final InputStream inputStream;
 	private final InputStream xorData;
-	private int xorRead;
+
 	private ProgressListener progressListener;
+
+	private int padRead;
 	private int bytesRead;
 
 	/**
 	 * Constructs an {@link XoringInputStream}
-	 * 
-	 * @param inputStream
-	 *            the {@link InputStream} to wrap
-	 * @param xorData
-	 *            the data to XOR against
-	 * @param offset
-	 *            the offset into the XOR data to start with
-	 * @throws IOException
-	 *             if the stream does not support seek, or if some other I/O error occurs
+	 *
+	 * @param inputStream the {@link InputStream} to wrap
+	 * @param xorData     the data to XOR against
+	 * @param offset      the offset into the XOR data to start with
+	 * @throws IOException if the stream does not support seek, or if some other I/O error occurs
 	 */
-	public XoringInputStream(InputStream inputStream, InputStream xorData, int offset) throws IOException {
+	public XoringInputStream(InputStream inputStream,
+													 InputStream xorData,
+													 int offset) throws IOException {
 		this.inputStream = inputStream;
 		this.xorData = xorData;
 		xorData.skip(offset);
 	}
 
-	public XoringInputStream(InputStream inputStream, File xorData, int offset) throws IOException {
+	public XoringInputStream(InputStream inputStream,
+													 File xorData,
+													 int offset) throws IOException {
 		this.inputStream = inputStream;
 		this.xorData = new FileInputStream(xorData);
 		this.xorData.skip(offset);
@@ -44,7 +47,7 @@ public class XoringInputStream extends InputStream {
 			return -1;
 		}
 		bytesRead++;
-		return read ^ readXor();
+		return read ^ readPad();
 	}
 
 	@Override
@@ -53,7 +56,9 @@ public class XoringInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] b, int off, int len) throws IOException {
+	public int read(byte[] b,
+									int off,
+									int len) throws IOException {
 		if (b == null) {
 			throw new NullPointerException();
 		} else if (off < 0 || len < 0 || len > b.length - off) {
@@ -78,23 +83,23 @@ public class XoringInputStream extends InputStream {
 
 				b[off + i] = (byte) c;
 			}
-		} catch (IOException ee) {
+		} catch (IOException ignored) {
 		}
 		notifyProgress();
 		return i;
 	}
 
-	private int readXor() throws IOException {
+	private int readPad() throws IOException {
 		int x = xorData.read();
-		xorRead++;
+		padRead++;
 		if (x == -1) {
-			throw new InsufficientXorDataRuntimeException("Ran out of XOR data after reading " + xorRead + " bytes");
+			throw new InsufficientPadDataRuntimeException("Ran out of pad data after reading " + padRead + " bytes");
 		}
 		return x;
 	}
 
 	@Override
-	public long skip(long n) throws IOException {
+	public long skip(long n) {
 		throw new RuntimeException("Not implemented");
 	}
 
@@ -114,7 +119,7 @@ public class XoringInputStream extends InputStream {
 	}
 
 	@Override
-	public synchronized void reset() throws IOException {
+	public synchronized void reset() {
 		throw new RuntimeException("Not implemented");
 	}
 

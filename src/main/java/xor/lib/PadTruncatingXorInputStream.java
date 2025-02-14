@@ -6,33 +6,37 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.security.SecureRandom;
 
+/**
+ * An {@link InputStream} that XORs the data being read through it with a pad, and truncates the pad as it is used
+ */
 public class PadTruncatingXorInputStream extends InputStream {
 
-	private final SecureRandom	   random	= new SecureRandom();
+	private final SecureRandom random = new SecureRandom();
 
-	private final InputStream	   inputStream;
-	private final RandomAccessFile	file;
-	private long	               pos;
-	private int	                   xorRead;
-	private int	                   bytesRead;
+	private final InputStream inputStream;
+	private final RandomAccessFile padFile;
+	private final boolean overwritePad;
 
-	private ProgressListener	   progressListener;
+	private ProgressListener progressListener;
+
+	private long padPosition;
+	private int padRead;
+	private int bytesRead;
+
 
 	/**
-	 * Creates a {@link PadTruncatingXorInputStream}. This XORs an {@link InputStream} with the XOR data in a file. It
-	 * overwrites, and then truncates the XOR data file as it reads it, to encourage non-reuse of the XOR data. The data
-	 * in the XOR file is read backwards, from the end of the file.
-	 *
-	 * @param inputStream
-	 * @param xorData
-	 * @param offset
-	 * @throws IOException
+	 * Creates a {@link PadTruncatingXorInputStream}. This XORs the supplied {@link InputStream} with the pad data in a
+	 * file. It overwrites, and then truncates the pad data file as it reads it, to encourage non-reuse of the pad data.
+	 * The data in the pad file is read backwards, from the end of the file.
 	 */
-	public PadTruncatingXorInputStream(final InputStream inputStream, final File xorData, final int offset)
-	        throws IOException {
+	public PadTruncatingXorInputStream(final InputStream inputStream,
+																		 final File xorData,
+																		 final int offset,
+																		 final boolean overwritePad) throws IOException {
 		this.inputStream = inputStream;
-		file = new RandomAccessFile(xorData, "rwd");
-		pos = file.length() - offset;
+		this.padFile = new RandomAccessFile(xorData, "rwd");
+		this.padPosition = padFile.length() - offset;
+		this.overwritePad = overwritePad;
 	}
 
 	@Override
@@ -43,7 +47,7 @@ public class PadTruncatingXorInputStream extends InputStream {
 		}
 		bytesRead++;
 
-		return read ^ readXor();
+		return read ^ readPad();
 	}
 
 	public void setProgressListener(final ProgressListener progressListener) {
@@ -56,23 +60,23 @@ public class PadTruncatingXorInputStream extends InputStream {
 		}
 	}
 
-	/**
-	 * Reads a byte of XOR from the file, overwrites it with a random value, and truncates the file.
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	private int readXor() throws IOException {
-		if (pos <= 0) {
-			throw new InsufficientXorDataRuntimeException("Ran out of XOR data after reading " + xorRead + " bytes");
-		}
-		pos--;
-		file.seek(pos);
-        final int x = file.read();
-        file.write(random.nextInt());
-        file.setLength(pos);
 
-		xorRead++;
+	/**
+	 * Reads a byte from the pad file, optionally overwrites it with a random value, and truncates the file.
+	 */
+	private int readPad() throws IOException {
+		if (padPosition <= 0) {
+			throw new InsufficientPadDataRuntimeException("Ran out of pad data after reading " + padRead + " bytes");
+		}
+
+		padPosition--;
+		padFile.seek(padPosition);
+		final int x = padFile.read();
+
+		if (overwritePad) padFile.write(random.nextInt()); // This is a slow operation
+		padFile.setLength(padPosition);
+
+		padRead++;
 		return x;
 	}
 }

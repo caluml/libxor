@@ -13,10 +13,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class PadTruncatingTest {
 
 	@Rule
-	public TemporaryFolder	temp	= new TemporaryFolder();
+	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
 	public void Different_pads_dont_encrypt_and_decrypt() throws Exception {
@@ -36,7 +37,7 @@ public class PadTruncatingTest {
 		FileUtils.writeByteArrayToFile(outputXorFile, b);
 
 		final PadTruncatingXorInputStream inputStream = new PadTruncatingXorInputStream(new ByteArrayInputStream(
-				originalData), inputXorFile, 0);
+			originalData), inputXorFile, 0, false);
 
 		final byte[] inputData = new byte[originalData.length];
 		inputStream.read(inputData);
@@ -44,7 +45,7 @@ public class PadTruncatingTest {
 
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		final PadTruncatingXorOutputStream outputStream = new PadTruncatingXorOutputStream(byteArrayOutputStream,
-		        outputXorFile, 0);
+			outputXorFile, 0, false);
 
 		outputStream.write(inputData);
 		outputStream.close();
@@ -73,7 +74,7 @@ public class PadTruncatingTest {
 		FileUtils.writeByteArrayToFile(outputXorFile, b);
 
 		final PadTruncatingXorInputStream inputStream = new PadTruncatingXorInputStream(new ByteArrayInputStream(
-				originalData), inputXorFile, 0);
+			originalData), inputXorFile, 0, false);
 
 		final byte[] inputData = new byte[originalData.length];
 		inputStream.read(inputData);
@@ -81,7 +82,7 @@ public class PadTruncatingTest {
 
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		final PadTruncatingXorOutputStream outputStream = new PadTruncatingXorOutputStream(byteArrayOutputStream,
-		        outputXorFile, 0);
+			outputXorFile, 0, false);
 
 		outputStream.write(inputData);
 		outputStream.close();

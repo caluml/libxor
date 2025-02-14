@@ -1,5 +1,7 @@
 package xor.cli;
 
+import xor.lib.XoringInputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,16 +9,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import xor.lib.XoringInputStream;
-
-public class Sender {
+public class FileSender {
 
 	/**
 	 * 1. Pad 2. Offset 3. File 4. Remote address. 5 Port
-	 * 
-	 * @param args
 	 */
 	public static void main(String[] args) throws IOException {
+		if (args.length != 5) {
+			System.err.println("Usage: FileSender <pad> <offset> <file to send> <remote host> <port>");
+			System.exit(1);
+		}
 		File pad = new File(args[0]);
 		if (!pad.canRead()) {
 			throw new RuntimeException("Can't read from " + pad.getAbsolutePath());

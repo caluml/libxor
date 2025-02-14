@@ -1,11 +1,10 @@
 package xor.lib;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * Implementation of {@link InputStream} which just keeps supplying a loop of the sample data.
- * 
+ * <p>
  * Used for testing.
  */
 public class TestingInputStream extends InputStream {
@@ -19,7 +18,7 @@ public class TestingInputStream extends InputStream {
 	}
 
 	@Override
-	public int read() throws IOException {
+	public int read() {
 		if (i >= bytes.length) {
 			i = 0;
 		}
